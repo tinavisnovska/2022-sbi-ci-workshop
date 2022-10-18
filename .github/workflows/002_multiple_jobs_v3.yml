@@ -56,6 +56,7 @@ jobs:
         #       docs: https://github.com/actions/download-artifact#usage
         with:
           name: output-message # TODO: specify the name of the artifact to be restored
+          path: message.txt
 
       - name: Ensure message.txt exists
         # Useful for debugging
