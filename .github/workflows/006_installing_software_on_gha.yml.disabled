@@ -1,0 +1,60 @@
+name: 006 - Installing software on GHA
+
+on:
+  push:
+    branches: [ main, gha-devel ]
+    paths: [ ".github/workflows/006*.yml" ]
+
+jobs:
+  install-samtools-native:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Install samtools using apt-get (Ubuntu)
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y samtools
+
+      - name: Install samtools using Homebrew (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          brew install samtools
+          
+      - name: Test samtools (system)
+        run: |
+          which samtools
+          samtools --version
+
+  install-samtools-conda:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Setup conda
+        # Setup conda using the setup-miniconda action
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniconda-version: "latest"
+          channels: bioconda, conda-forge, defaults
+          use-only-tar-bz2: true  # Enables caching of conda packages
+          auto-update-conda: true
+          auto-activate-base: true
+
+      - name: Install samtools using conda
+        run: conda create -y --name samtools-env samtools
+
+      - name: Test samtools (conda)
+        shell: bash -l {0}  # Workaround for conda activate not working
+        run: |
+          conda activate samtools-env
+          
+          which samtools
+          samtools --version

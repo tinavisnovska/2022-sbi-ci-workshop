@@ -1,0 +1,47 @@
+name: 004 - Job matrix v3
+
+on:
+  push:
+    branches: [ main, gha-devel ]
+    paths: [ ".github/workflows/004*v3.yml" ]
+
+
+jobs:
+  job-matrix-example:
+    strategy:
+      matrix:
+        os: [ 'ubuntu-20.04', 'macos-12', 'windows-latest' ]
+        # TODO: Update the job matrix such that the Setup Python step
+        #       sets up Python 3.9 and 3.10 instead of 3.7
+        #
+        # Obs:  Matrix variables can have arbitrary names and values.
+
+      fail-fast: false  # Do not cancel jobs as soon as a job fails
+
+    runs-on: ${{ matrix.os }}  # Variable is expanded to one of the OSes from the job matrix
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check Python version
+        run: |
+          echo '${{ matrix.os }}'
+          
+          which python3
+          python3 --version
+
+      # Install Python using the actions/setup-python action
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          # TODO replace version 3.7 with the version defined in the job matrix
+          python-version: '3.7'
+
+      - name: Check Python version one more time
+        run: |
+          which python3
+          python3 --version
+
+      - name: Run Python script
+        run: python3 scripts/test_dictionary_union.py

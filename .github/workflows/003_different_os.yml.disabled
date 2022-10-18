@@ -1,0 +1,29 @@
+name: 003 - Different runners
+
+on:
+  push:
+    branches: [ main, gha-devel ]
+    paths: [ ".github/workflows/003*.yml" ]
+
+
+jobs:
+  ubuntu-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Where am I running?
+        run: uname
+
+  # TODO: Add a job for macOS
+  #
+  # Obs 1: If you'd rather not guess the runner name, checkout the table at the following link:
+  #        https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+  #
+  # Obs 2: The uname command works on macOS too.
+  #        Feel free to also try out other commands.
+
+  windows-job:
+    runs-on: windows-latest
+    steps:
+      - name: Where am I running?
+        shell: cmd  # Use cmd instead of Powershell
+        run: ver

@@ -1,0 +1,45 @@
+name: 007 - Running Actions using containers
+
+on:
+  push:
+    branches: [ main, gha-devel ]
+    paths: [ ".github/workflows/007*.yml" ]
+
+jobs:
+  container-example:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - 'archlinux:base'
+          - 'centos:7'
+          - 'fedora:latest'
+
+      fail-fast: false  # Do not cancel jobs as soon as a job fails
+
+    container:
+      image: ${{ matrix.image }}
+
+    steps:
+      - name: Print distro information
+        run: cat /etc/*-release
+
+      - name: Install GCC and git (pacman)
+        if: ${{ startsWith(matrix.image, 'archlinux') }}
+        run: pacman -Sy --noconfirm gcc git
+
+      - name: Install GCC and git (yum)
+        if: ${{ !startsWith(matrix.image, 'archlinux') }}
+        run: yum install -y gcc-c++ git
+
+      - name: Check GCC version
+        run: gcc --version
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Compile test program
+        run: g++ -O3 -std=c++20 scripts/test_cpp20.cpp -o test
+
+      - name: Run test program
+        run: ./test if you can run this then you are using a modern compiler!
