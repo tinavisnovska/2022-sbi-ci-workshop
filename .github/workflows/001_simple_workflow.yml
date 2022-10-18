@@ -31,6 +31,7 @@ jobs:
         run: |  # <- The pipe sign enables multi-line statements
           echo 'Current time is:'
           date
+          exit 1
 
 # That's it!
 # Now head over to the Actions WebUI on GitHub to inspect the workflow output.
